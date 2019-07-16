@@ -84,10 +84,36 @@ for c in cities:
 
 def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
     # within will hold the cities that fall within the specified region
-    within = []
+    # within = []
 
     # TODO Ensure that the lat and lon valuse are all floats
     # Go through each city and check to see if it falls within
     # the specified coordinates.
 
-    return within
+    # make everything floats so our math works, but mostly because spec said so
+    lat1 = float(lat1)
+    lat2 = float(lat2)
+    lon1 = float(lon1)
+    lon2 = float(lon2)
+
+    # Points represented as dictionary so i can use pt1["lat"] style syntax
+    # normalizing inputs to create a bottom left and top right point
+    pt1 = {
+        # bottom left point
+        "lat": lat1 if lat1 < lat2 else lat2,
+        "lon": lon1 if lon1 < lon2 else lon2
+    }
+    pt2 = {
+        # top right point
+        "lat": lat1 if lat1 > lat2 else lat2,
+        "lon": lon1 if lon1 > lon2 else lon2
+    }
+
+    def is_inside(pt1, pt2, city):
+        """ returns true if a city is within the rect described by pt1 and pt2 """
+        inside_lat = pt1["lat"] < city.lat and pt2["lat"] > city.lat
+        inside_lon = pt1["lon"] < city.lon and pt2["lon"] > city.lon
+        return inside_lat and inside_lon
+
+    # this is a nice one liner but not sure if its very "P Y T H O N I C"
+    return list(filter(lambda city: is_inside(pt1, pt2, city), cities))
